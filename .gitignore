@@ -1,0 +1,5 @@
+.idea
+data/
+secrets.py
+Pipfile.lock
+TradePlatform/**/__pycache__/
