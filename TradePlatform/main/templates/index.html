@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+        <title>Project</title>
+    </head>
+    <body>
+        <div id="container">
+            <div id="header">
+                1
+                {% if is_auth == 1 %}
+                    <div id='auth_btn' style="display:flex; float:right;">
+                        <form action="auth/sign_out/">
+                            <input id='btns' type="submit" value="Sign Out">
+                        </form>
+                        Hi, <a href="profile/">{{current_user_username}}</a>
+                    </div>
+                {% else %}
+                    <div id='non_auth_btn' style="display:flex; float:right;">
+                        <form action="auth/register/">
+                            <input id='btns' type="submit" value="Sign Up">
+                        </form>
+                        <form action="auth/login">
+                            <input id='btns' type="submit" value="Sign In">
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+<!--
+            {% if auth == 1 %}
+            <div id = "main">
+                {% if emptyError != 1%}
+                <div id="diz">
+                    <form action="../diz/" method="POST">
+                        {% csrf_token %}
+                        <button class="buttons">
+                            <img src="{% static "images/diz.png" %}">
+                        </button>
+                    </form>
+                </div>
+                <div id="content">
+                    <p id="username">{{user.username}}</p>
+                    <img  src="{{photo.url}}">
+                </div>
+                <div id="like">
+                    <form action="../like/" method="POST">
+                        {% csrf_token %}
+                        <input type = 'hidden' name="id" value='{{photo.id}}'/>
+
+                        <button class="buttons" value = "{{id}}">
+                            <img src="{% static "images/like.png" %}">
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <div id="tmp" style="margin: auto;">
+                    <p style="font-size: 15px; color:red;">Фотографий пока нет</p>
+                    <a style="font-size: 10px; color:red;" href="addingSomePhotos/">Добавить несколько ?</a>
+                </div>
+                {% endif %}
+
+            </div>
+-->
+            <div id="footer">&copy; Pavel Homanau</div>
+        </div>
+    {% endif %}
+    </body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+</head>
+<body>
+    <div id="container">
+    <div id="header">
+        Like tinder
+    </div>
+    <div id = "main">
+
+        <div id="content">
+            <form method="POST" action="../login/">
+                {% csrf_token %}
+                 <p>
+                    <label>email</label><br>
+                    <input type="email" name="email" />
+                 </p>
+                 <p>
+                     <label>password</label><br>
+                     <input type="password" name="password" />
+                 </p>
+                 <input type="submit" value="Sign in" >
+            </form>
+        </div>
+    </div>
+
+    <div id="footer">&copy; Pavel Homanau <a href="/">Back</a></div>
+</body>
+</html>
