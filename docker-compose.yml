@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:12-alpine
+    ports:
+      - 5433:5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+  web:
+    build:
+      context: TradePlatform
+      dockerfile: Dockerfile
+    volumes:
+      - ./TradePlatform/:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    env_file:
+      - ./backend.env
