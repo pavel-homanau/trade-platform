@@ -5,12 +5,11 @@ name = "pypi"
 
 [packages]
 djangorestframework = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
 flake8 = "*"
 celery = "*"
 pytest = "*"
-jwt = "*"
-
+djangorestframework-simplejwt = "*"
 [dev-packages]
 
 [requires]
