@@ -1,9 +1,10 @@
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import RegistrationSerializer, LoginSerializer
+from .models import User
+from .serializers import RegistrationSerializer, LoginSerializer, UserSerializer
 
 
 class RegistrationAPIView(APIView):
@@ -30,6 +31,12 @@ class LoginAPIView(APIView):
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
 
+        request.session['current_user'] = user
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
