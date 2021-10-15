@@ -1,11 +1,9 @@
 from TradePlatform.celery import app
-from datetime import datetime
-
-from trading.models import Item
+from trading import models
+from trading.services import CreateTrade
 
 
 @app.task
-def tst_task():
-    print('task')
-
+def create_trade_task():
+    CreateTrade.execute({})
 

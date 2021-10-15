@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import User
-from .serializers import RegistrationSerializer, LoginSerializer, UserSerializer
+from .serializers import (RegistrationSerializer,
+                          LoginSerializer,
+                          UserSerializer)
 
 
 class RegistrationAPIView(APIView):
@@ -39,4 +41,3 @@ class LoginAPIView(APIView):
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-

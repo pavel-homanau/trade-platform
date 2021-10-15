@@ -5,7 +5,6 @@ services:
     build:
       context: TradePlatform
       dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./TradePlatform/:/usr/src/app
     ports:
@@ -14,7 +13,6 @@ services:
       - ./backend.env
     depends_on:
       - db
-      - redis
 
   db:
     image: postgres:12-alpine
@@ -32,7 +30,7 @@ services:
     build:
       context: TradePlatform
       dockerfile: Dockerfile
-    command: celery -A TradePlatform worker -l info
+    command: "celery -A TradePlatform worker -l info"
     volumes:
       - ./TradePlatform:/usr/src/app
     env_file:
@@ -46,7 +44,7 @@ services:
     build:
       context: TradePlatform
       dockerfile: Dockerfile
-    command: celery -A TradePlatform beat -l info
+    command: "celery -A TradePlatform beat -l info"
     volumes:
       - ./TradePlatform:/usr/src/app
     env_file:

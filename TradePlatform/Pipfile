@@ -10,7 +10,8 @@ celery = "*"
 pytest = "*"
 djangorestframework-simplejwt = "*"
 redis = "*"
-flower = "*"
+django-service-objects = "*"
+django-celery-results = "*"
 
 [dev-packages]
 

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('trading', '0003_auto_20211011_1134'),
     ]
@@ -13,11 +12,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='offer',
             name='entry_quantity',
-            field=models.IntegerField(blank=True, null=True, verbose_name='Requested quantity'),
+            field=models.IntegerField(blank=True,
+                                      null=True,
+                                      verbose_name='Requested quantity'),
         ),
         migrations.AlterField(
             model_name='offer',
             name='order_type',
-            field=models.PositiveSmallIntegerField(choices=[(1, 'buy'), (2, 'sell')]),
+            field=models.PositiveSmallIntegerField(choices=[(1, 'buy'),
+                                                            (2, 'sell')]),
         ),
     ]

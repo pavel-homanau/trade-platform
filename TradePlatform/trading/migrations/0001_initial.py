@@ -89,8 +89,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.IntegerField(default=0, verbose_name='Stock quantity')),
-                ('item', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='trading.item')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                ('item', models.ForeignKey(blank=True,
+                                           null=True,
+                                           on_delete=django.db.models.deletion.SET_NULL, to='trading.item')),
+                ('user', models.ForeignKey(blank=True,
+                                           null=True,
+                                           on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
