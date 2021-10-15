@@ -6,10 +6,13 @@ name = "pypi"
 [packages]
 djangorestframework = "*"
 psycopg2-binary = "*"
-flake8 = "*"
 celery = "*"
 pytest = "*"
 djangorestframework-simplejwt = "*"
+redis = "*"
+django-service-objects = "*"
+django-celery-results = "*"
+
 [dev-packages]
 
 [requires]
