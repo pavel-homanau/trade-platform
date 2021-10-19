@@ -1,6 +1,8 @@
 .idea
-postgres_data/
-data/
-Pipfile.lock
-TradePlatform/**/__pycache__/
+postgres_data
+data
+__pycache__
 backend.env
+Pipfile.lock
+
+celerybeat-schedule

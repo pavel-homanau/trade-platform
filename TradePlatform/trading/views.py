@@ -1,16 +1,21 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-
+from rest_framework.views import APIView
+from django.utils.decorators import method_decorator
 from authentication.models import User
 from trading import models
 from trading import serializers
+from django.views.decorators.cache import cache_page
+
+from trading.services import CreateTrade
 
 
 class DefaultViewSet(viewsets.ViewSet):
     class Meta:
         abstract = True
 
+    @method_decorator(cache_page(5*60))
     def list(self, request):
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
@@ -24,7 +29,9 @@ class DefaultViewSet(viewsets.ViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.queryset.get(pk=kwargs.get('pk'))
-        serializer = self.serializer_class(instance, data=request.data, partial=True)
+        serializer = self.serializer_class(instance,
+                                           data=request.data,
+                                           partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -67,12 +74,14 @@ class OfferViewSet(DefaultViewSet):
 
         if serializer.data['order_type'] == 2:
             try:
-                item_in_inventory = models.Inventory.objects.get(user=User.objects.get(id=serializer.data['user']))
+                current_user = User.objects.get(id=serializer.data['user'])
+                item_in_inventory = models.\
+                    Inventory.objects.get(user=current_user)
                 item_in_inventory.quantity += serializer.data['entry_quantity']
                 item_in_inventory.save()
             except ObjectDoesNotExist:
                 item_in_inventory = models.Inventory(item=models.Item.objects.get(id=serializer.data['item']),
-                                                     user=User.objects.get(id=serializer.data['user']),
+                                                     user=current_user,
                                                      quantity=serializer.data['entry_quantity'])
                 item_in_inventory.save()
 

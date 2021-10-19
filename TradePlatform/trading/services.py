@@ -1,26 +1,27 @@
 from service_objects.services import Service
-
-from authentication.models import User
 from trading import models
 
 
 class CreateTrade(Service):
 
     def process(self):
-        active_offers = models.Offer.objects.filter(is_active=True)
+        active_offers = models.Offer.objects.filter(is_active=True). \
+            select_related('item', 'user').\
+            only('item__price', 'user__cash',
+                 'order_type', 'entry_quantity', 'price')
         buy_offers = active_offers.filter(order_type=1)
-        sell_offers = active_offers.filter(order_type=2)
+
         for buy_offer in buy_offers:
             item = buy_offer.item
-            filtered_sell_offers = sell_offers.filter(item=item,
-                                                      price__gte=buy_offer.price) \
-                .order_by('price')
+            sell_offers = active_offers.filter(order_type=2).\
+                filter(item=item, price__gte=buy_offer.price). \
+                order_by('price')
 
             # check, if sell_offers exist
-            if filtered_sell_offers:
-                for sell_offer in filtered_sell_offers:
-                    seller = User.objects.get(email=sell_offer.user)
-                    buyer = User.objects.get(email=buy_offer.user)
+            if sell_offers:
+                for sell_offer in sell_offers:
+                    seller = sell_offer.user
+                    buyer = buy_offer.user
 
                     trade_object = models.Trade(item=item,
                                                 buyer=buyer,
@@ -34,8 +35,43 @@ class CreateTrade(Service):
                     if (buyer.cash - trade_object.unit_price * trade_object.quantity) >= 0:
                         trade_object.save()
 
-                        self.process_with_inventory_and_cash(trade_object)
                         self.process_with_offers(trade_object)
+                        self.process_with_inventory_and_cash(trade_object)
+
+    def process_with_inventory_and_cash(self, trade_object):
+
+        buyer = trade_object.buyer
+        seller = trade_object.seller
+        item = trade_object.item
+        buy_offer = trade_object.buyer_offer
+        unit_price = trade_object.unit_price
+        quantity = trade_object.quantity
+
+        seller.cash += unit_price * quantity
+        seller.save(update_fields=['cash'])
+
+        buyer.cash -= unit_price * quantity
+        buyer.save(update_fields=['cash'])
+
+        item_in_buyer_inventory = models. \
+            Inventory.objects.filter(user=buyer, item=item).first()
+        item_in_seller_inventory = models. \
+            Inventory.objects.get(user=seller, item=item)
+
+        if item_in_buyer_inventory:
+            item_in_buyer_inventory.quantity += quantity
+            item_in_buyer_inventory.save(update_fields=['quantity'])
+        else:
+            item_in_buyer_inventory = models.Inventory(item=buy_offer.item,
+                                                       user=buyer,
+                                                       quantity=trade_object.quantity)
+            item_in_buyer_inventory.save()
+
+        item_in_seller_inventory.quantity -= quantity
+        if item_in_seller_inventory.quantity == 0:
+            item_in_seller_inventory.delete()
+        else:
+            item_in_seller_inventory.save(update_fields=['quantity'])
 
     def process_with_offers(self, trade_object):
         buy_offer = trade_object.buyer_offer
@@ -54,43 +90,3 @@ class CreateTrade(Service):
             sell_offer.save(update_fields=['is_active'])
         else:
             sell_offer.save(update_fields=['entry_quantity'])
-
-    def process_with_inventory_and_cash(self, trade_object):
-        buyer = trade_object.buyer
-        seller = trade_object.seller
-        item = trade_object.item
-        buy_offer = trade_object.buyer_offer
-
-        seller.cash += trade_object.unit_price * trade_object.quantity
-        seller.save(update_fields=['cash'])
-
-        buyer.cash -= trade_object.unit_price * trade_object.quantity
-        buyer.save(update_fields=['cash'])
-
-        item_in_buyer_inventory = models.Inventory.objects.filter(user=buyer,
-                                                                  item=item)
-        item_in_seller_inventory = models.Inventory.objects.get(user=seller,
-                                                                item=item)
-        if item_in_buyer_inventory:
-            item_in_buyer_inventory = item_in_buyer_inventory[0]
-            item_in_buyer_inventory.quantity += trade_object.quantity
-            item_in_buyer_inventory.save(update_fields=['quantity'])
-        else:
-            item_in_buyer_inventory = models.Inventory(item=buy_offer.item,
-                                                       user=buyer,
-                                                       quantity=trade_object.quantity)
-            item_in_buyer_inventory.save()
-
-        item_in_seller_inventory.quantity -= trade_object.quantity
-        item_in_seller_inventory.save(update_fields=['quantity'])
-
-        # delete if item is empty
-        if item_in_seller_inventory.quantity == 0:
-            item_in_seller_inventory.delete()
-
-
-class PriceService(Service):
-
-    def process(self):
-        # current_item_price = models.Price.objects.filter(item=)
-        pass

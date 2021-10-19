@@ -13,6 +13,7 @@ services:
       - ./backend.env
     depends_on:
       - db
+      - cache
 
   db:
     image: postgres:12-alpine
@@ -53,3 +54,8 @@ services:
       - db
       - redis
       - web
+
+  cache:
+    image: memcached
+    ports:
+      - "11211:11211"

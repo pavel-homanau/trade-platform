@@ -11,5 +11,6 @@ router.register(r'inventories', views.InventoryViewSet, basename="Inventory")
 
 app_name = 'trading'
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(router.urls))
 ]
+

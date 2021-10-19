@@ -43,7 +43,9 @@ class LoginSerializer(serializers.Serializer):
 
         if user is None:
             raise serializers.\
-                ValidationError('A user with this email and password was not found.')
+                ValidationError('A user with this'
+                                ' email and password '
+                                'was not found.')
 
         refresh = RefreshToken.for_user(user)
 

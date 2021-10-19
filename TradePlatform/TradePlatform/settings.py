@@ -16,8 +16,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("SECRET_KEY",
-                            'django-insecure-rsoo)ma_37-d05o$)4tlu8161-c(q3_##=(9l$7_m6*n@gf-67')
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
@@ -72,12 +71,17 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'debug_toolbar',
     'authentication',
     'trading',
-    'django_celery_results',
+    'drf_yasg',
 ]
 
+STATIC_URL = '/static/'
+
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -167,6 +171,7 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.TokenAuthentication',
@@ -174,13 +179,28 @@ REST_FRAMEWORK = {
 }
 
 # celery
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER",
-                                   "redis://0.0.0.0:6379/0")
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND",
-                                       "redis://0.0.0.0:6379/0")
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND")
 CELERY_BEAT_SCHEDULE = {
     'every_min': {
         'task': 'trading.tasks.create_trade_task',
         'schedule': 60.0,
     },
+}
+
+# cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'cache:11211',
+    }
+}
+
+# django-debug-toolbar
+
+# INTERNAL_IPS = [
+# ]
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: True,
 }
