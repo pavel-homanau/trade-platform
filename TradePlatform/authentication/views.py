@@ -38,6 +38,6 @@ class LoginAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):  # pylint: disable=too-many-ancestors
     queryset = User.objects.all()
     serializer_class = UserSerializer

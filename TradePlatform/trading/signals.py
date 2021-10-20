@@ -1,8 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from trading import models
 from django.utils import timezone
-import pytz
+from trading import models
 
 
 @receiver(post_save, sender=models.Trade)

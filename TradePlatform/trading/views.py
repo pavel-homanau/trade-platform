@@ -1,4 +1,9 @@
+from abc import abstractmethod
+
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
@@ -8,9 +13,20 @@ from trading import serializers
 
 
 class DefaultViewSet(viewsets.ViewSet):
+    @property
+    @abstractmethod
+    def queryset(self):
+        pass
+
+    @property
+    @abstractmethod
+    def serializer_class(self):
+        pass
+
     class Meta:
         abstract = True
 
+    @method_decorator(cache_page(5 * 60))
     def list(self, request):
         serializer = self.serializer_class(self.queryset, many=True)
         return Response(serializer.data)
@@ -67,13 +83,17 @@ class OfferViewSet(DefaultViewSet):
 
         if serializer.data['order_type'] == 2:
             try:
-                item_in_inventory = models.Inventory.objects.get(user=User.objects.get(id=serializer.data['user']))
+                current_user = User.objects.get(id=serializer.data['user'])
+                item_in_inventory = models.Inventory.objects. \
+                    get(user=current_user)
                 item_in_inventory.quantity += serializer.data['entry_quantity']
                 item_in_inventory.save()
             except ObjectDoesNotExist:
-                item_in_inventory = models.Inventory(item=models.Item.objects.get(id=serializer.data['item']),
-                                                     user=User.objects.get(id=serializer.data['user']),
-                                                     quantity=serializer.data['entry_quantity'])
+                item_in_inventory = models. \
+                    Inventory(item=models.Item.objects.
+                              get(id=serializer.data['item']),
+                              user=current_user,
+                              quantity=serializer.data['entry_quantity'])
                 item_in_inventory.save()
 
         return Response(serializer.data)
