@@ -60,7 +60,7 @@ SIMPLE_JWT = {
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -183,4 +183,15 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'trading.tasks.create_trade_task',
         'schedule': 60.0,
     },
+}
+# cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': 'cache:11211',
+    }
+}
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
 }

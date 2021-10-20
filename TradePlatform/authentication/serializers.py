@@ -27,9 +27,9 @@ class LoginSerializer(serializers.Serializer):
     access_token = serializers.CharField(max_length=255, read_only=True)
     refresh_token = serializers.CharField(max_length=255, read_only=True)
 
-    def validate(self, data):
-        email = data.get('email', None)
-        password = data.get('password', None)
+    def validate(self, attrs):
+        email = attrs.get('email', None)
+        password = attrs.get('password', None)
 
         if email is None:
             raise serializers.\

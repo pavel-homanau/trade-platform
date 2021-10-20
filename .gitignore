@@ -4,3 +4,6 @@ data/
 Pipfile.lock
 TradePlatform/**/__pycache__/
 backend.env
+.mypy_cache
+celery_app
+celerybeat-schedule

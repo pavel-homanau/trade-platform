@@ -6,12 +6,19 @@ name = "pypi"
 [packages]
 djangorestframework = "*"
 psycopg2-binary = "*"
-celery = "*"
-pytest = "*"
 djangorestframework-simplejwt = "*"
+python-memcached = "*"
+celery = "*"
 redis = "*"
+pytest = "*"
 django-service-objects = "*"
 django-celery-results = "*"
+django-debug-toolbar = "*"
+django-rest-swagger = "*"
+drf-yasg = "*"
+pylint-django = "*"
+flake8 = "*"
+mypy = "*"
 
 [dev-packages]
 
