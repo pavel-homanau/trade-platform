@@ -1,27 +1,24 @@
 from django.db import models
-from authentication.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Currency(models.Model):
     name = models.CharField("Name", max_length=128, unique=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Item(models.Model):
     name = models.CharField("Name", max_length=128, unique=True)
     price = models.DecimalField(max_digits=7, decimal_places=2, blank=True,
                                 null=True)
-    currency = models.ForeignKey(Currency, blank=True, null=True,
-                                 on_delete=models.SET_NULL)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     details = models.TextField("Details", blank=True, null=True,
                                max_length=512)
 
 
 class Price(models.Model):
-    item = models.ForeignKey(Item, blank=True, null=True,
-                             on_delete=models.CASCADE,
+    item = models.ForeignKey(Item, on_delete=models.CASCADE,
                              related_name='prices',
                              related_query_name='prices')
     price = models.DecimalField(max_digits=7, decimal_places=2,
@@ -30,18 +27,14 @@ class Price(models.Model):
 
 
 class Inventory(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True,
-                             on_delete=models.SET_NULL)
-    item = models.ForeignKey(Item, blank=True, null=True,
-                             on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField("Stock quantity", default=0)
 
 
 class WatchList(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True,
-                             on_delete=models.SET_NULL)
-    item = models.ForeignKey(Item, blank=True, null=True,
-                             on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
 
 
 class Offer(models.Model):
@@ -49,10 +42,8 @@ class Offer(models.Model):
         (1, 'buy'),
         (2, 'sell'),
     )
-    user = models.ForeignKey(User, blank=True, null=True,
-                             on_delete=models.SET_NULL)
-    item = models.ForeignKey(Item, blank=True, null=True,
-                             on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     order_type = models.PositiveSmallIntegerField(choices=order_type_choice)
     entry_quantity = models.IntegerField("Requested quantity",
                                          blank=True,
@@ -68,38 +59,23 @@ class Offer(models.Model):
 
 
 class Trade(models.Model):
-    item = models.ForeignKey(Item,
-                             blank=True,
-                             null=True,
-                             on_delete=models.SET_NULL)
-    seller = models.ForeignKey(User,
-                               blank=True,
-                               null=True,
-                               on_delete=models.SET_NULL,
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    seller = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='seller_trade',
                                related_query_name='seller_trade',
                                )
-    buyer = models.ForeignKey(User,
-                              blank=True,
-                              null=True,
-                              on_delete=models.SET_NULL,
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE,
                               related_name='buyer_trade',
                               related_query_name='buyer_trade',
                               )
     quantity = models.IntegerField()
     unit_price = models.DecimalField(max_digits=7, decimal_places=2)
     description = models.TextField(blank=True, null=True)
-    buyer_offer = models.ForeignKey(Offer,
-                                    blank=True,
-                                    null=True,
-                                    on_delete=models.SET_NULL,
+    buyer_offer = models.ForeignKey(Offer, on_delete=models.CASCADE,
                                     related_name='buyer_trade',
                                     related_query_name='buyer_trade',
                                     )
-    seller_offer = models.ForeignKey(Offer,
-                                     blank=True,
-                                     null=True,
-                                     on_delete=models.SET_NULL,
+    seller_offer = models.ForeignKey(Offer, on_delete=models.CASCADE,
                                      related_name='seller_trade',
                                      related_query_name='seller_trade',
                                      )

@@ -1,8 +1,6 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from .models import User
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -13,11 +11,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('email', 'username', 'password',)
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        return get_user_model().objects.create_user(**validated_data)
 
 
 class LoginSerializer(serializers.Serializer):
@@ -43,7 +41,8 @@ class LoginSerializer(serializers.Serializer):
 
         if user is None:
             raise serializers.\
-                ValidationError('A user with this email and password was not found.')
+                ValidationError('A user with this email '
+                                'and password was not found.')
 
         refresh = RefreshToken.for_user(user)
 
@@ -61,8 +60,8 @@ class UserSerializer(serializers.ModelSerializer):
                                      write_only=True)
 
     class Meta:
-        model = User
-        # fields = ('email', 'username', 'password', )
+        model = get_user_model()
+
         fields = ('id', 'username', 'email', 'password', 'cash',)
 
     def update(self, instance, validated_data):

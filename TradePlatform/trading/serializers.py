@@ -1,38 +1,39 @@
 from rest_framework import serializers
 
-from . import models
+from trading.models import (Currency, Item, WatchList,
+                            Offer, Inventory)
 
 
 class CurrencySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.Currency
+        model = Currency
         fields = '__all__'
 
 
 class ItemSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.Item
+        model = Item
         fields = '__all__'
 
 
 class WatchListSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.WatchList
+        model = WatchList
         fields = '__all__'
 
 
 class OfferSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.Offer
+        model = Offer
         fields = '__all__'
 
 
 class InventorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.Inventory
+        model = Inventory
         fields = '__all__'
