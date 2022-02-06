@@ -1,0 +1,53 @@
+version: '3.7'
+
+services:
+  email_mservice:
+    build: .
+    container_name: email
+    ports:
+      - "8002:8000"
+    restart: always
+    env_file:
+      - ./email_ms.env
+    networks:
+      - email_network
+
+  email_redis:
+    image: redis:6-alpine
+    ports:
+      - "6380:6379"
+    networks:
+      - email_network
+
+  email_celery:
+    build: .
+    container_name: email_celery
+    command: "celery -A app.worker.celery_worker worker -l info"
+    env_file:
+      - ./email_ms.env
+    depends_on:
+      - email_redis
+      - email_mservice
+    networks:
+      - external_bridge_network
+      - email_network
+
+  email_celery-beat:
+    build: .
+    container_name: email_celery-beat
+    command: "celery -A app.worker.celery_worker beat -l info"
+    env_file:
+      - ./email_ms.env
+    depends_on:
+      - email_redis
+      - email_mservice
+    networks:
+      - external_bridge_network
+      - email_network
+
+networks:
+  external_bridge_network:
+    external:
+      name: bridge_network_mine
+  email_network:
+    name: email_network

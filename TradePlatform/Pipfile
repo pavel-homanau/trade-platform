@@ -4,23 +4,24 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+django = "*"
 djangorestframework = "*"
-psycopg2-binary = "*"
 djangorestframework-simplejwt = "*"
-python-memcached = "*"
-celery = "*"
-redis = "*"
-pytest = "*"
 django-service-objects = "*"
 django-celery-results = "*"
 django-debug-toolbar = "*"
-django-rest-swagger = "*"
 drf-yasg = "*"
-pylint-django = "*"
+psycopg2-binary = "*"
+python-memcached = "*"
+redis = "*"
+celery = "*"
+pytest = "*"
 flake8 = "*"
 mypy = "*"
+pylint-django = "*"
+kafka-python = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"
