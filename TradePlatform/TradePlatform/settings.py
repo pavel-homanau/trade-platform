@@ -182,12 +182,12 @@ CELERY_BROKER_URL = os.environ.get("CELERY_BROKER",
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND",
                                        "redis://0.0.0.0:6379/0")
 CELERY_BEAT_SCHEDULE = {
-    # 'every_min': {
-    #     'task': 'trading.tasks.create_trade_task',
-    #     'schedule': 60.0,
-    # },
-    'email_task_drf': {
-            'task': 'trading.tasks.create_send_email_task',
-            'schedule': 20.0
-        },
+    'every_min': {
+        'task': 'trading.tasks.create_trade_task',
+        'schedule': 60.0,
+    },
+    # 'email_task_drf': {
+    #         'task': 'trading.tasks.create_send_email_task',
+    #         'schedule': 20.0
+    #     },
 }

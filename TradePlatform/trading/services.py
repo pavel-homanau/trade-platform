@@ -100,7 +100,7 @@ class CreateTrade(Service):
                 seller = sell_offer.user
                 buyer = buy_offer.user
 
-                trade_object = models.Trade(
+                self.trade_object = models.Trade(
                     item=item,
                     buyer=buy_offer.user,
                     seller=sell_offer.user,
@@ -111,18 +111,18 @@ class CreateTrade(Service):
                     seller_offer=sell_offer
                 )
 
-                if (buyer.cash - trade_object.unit_price * trade_object.quantity) >= 0:
-                    trade_object.save()
+                if (buyer.cash - self.trade_object.unit_price * self.trade_object.quantity) >= 0:
+                    self.trade_object.save()
 
-                    seller.cash += trade_object.unit_price * trade_object.quantity
+                    seller.cash += self.trade_object.unit_price * self.trade_object.quantity
                     seller.save(update_fields=['cash'])
 
-                    buyer.cash -= trade_object.unit_price * trade_object.quantity
+                    buyer.cash -= self.trade_object.unit_price * self.trade_object.quantity
                     buyer.save(update_fields=['cash'])
 
                     self.inventory_process()
                     self.quantity_process()
-                    self.send_emails()
+                    # self.send_emails()
 
 
 class SendEmail(Service):

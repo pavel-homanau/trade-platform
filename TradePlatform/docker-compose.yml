@@ -13,6 +13,18 @@ services:
     networks:
       - proxynet
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: web_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    networks:
+      - proxynet
+
   redis:
     image: redis:6-alpine
     container_name: web_redis
@@ -25,7 +37,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: web
+    container_name: web_drf
     volumes:
       - ./:/usr/src/app
     ports:
@@ -35,7 +47,7 @@ services:
     depends_on:
       - db
       - redis
-      - kafka
+#      - kafka
     networks:
       - proxynet
 
@@ -71,25 +83,25 @@ services:
     networks:
       - proxynet
 
-  zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    networks:
-      proxynet:
-        ipv4_address: 10.1.0.112
-
-  kafka:
-    image: wurstmeister/kafka
-    container_name: kafka
-    ports:
-      - "9092:9092"
-    env_file:
-      - ./backend.env
-    networks:
-      proxynet:
-        ipv4_address: 10.1.0.111
+#  zookeeper:
+#    image: wurstmeister/zookeeper
+#    container_name: zookeeper
+#    ports:
+#      - "2181:2181"
+#    networks:
+#      proxynet:
+#        ipv4_address: 10.1.0.112
+#
+#  kafka:
+#    image: wurstmeister/kafka
+#    container_name: kafka
+#    ports:
+#      - "9092:9092"
+#    env_file:
+#      - ./backend.env
+#    networks:
+#      proxynet:
+#        ipv4_address: 10.1.0.111
 
 networks:
   proxynet:

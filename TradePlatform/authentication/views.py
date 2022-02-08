@@ -1,6 +1,7 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 from .serializers import (LoginSerializer, RegistrationSerializer,
@@ -26,7 +27,7 @@ class AuthorizationViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response('You successfully registered.', status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False, url_path='login')
     def login(self, request):
@@ -34,11 +35,11 @@ class AuthorizationViewSet(viewsets.GenericViewSet):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        print(serializer.data)
-
-        request.session['token'] = serializer.data.get('access_token')
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        request.current_user = User.objects.get(email=serializer.data.get('email'))
+        print(request.current_user)
+        return Response({
+            'token': serializer.data.get('token')
+        }, status=status.HTTP_200_OK)
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):  # pylint: disable=too-many-ancestors

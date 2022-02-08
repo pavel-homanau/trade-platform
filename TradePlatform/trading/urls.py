@@ -2,7 +2,6 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from trading import views
-from trading.views import TestView
 
 router = DefaultRouter()
 router.register(r'currencies', views.CurrencyViewSet, basename="Currency")
@@ -14,5 +13,5 @@ router.register(r'inventories', views.InventoryViewSet, basename="Inventory")
 app_name = 'trading'
 urlpatterns = [
     path('', include(router.urls)),
-    path('aa-test/', TestView.as_view())
+    # path('aa-test/', TestView.as_view())
 ]

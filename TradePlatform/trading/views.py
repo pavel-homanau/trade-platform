@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+import jwt
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -7,9 +8,11 @@ from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from TradePlatform.settings import SECRET_KEY
 from authentication.models import User
 from trading import models
 from trading import serializers
+from trading.serializers import CreateOfferSerializer, ListOfferSerializer
 
 
 class CurrencyViewSet(viewsets.GenericViewSet,
@@ -59,32 +62,41 @@ class OfferViewSet(viewsets.GenericViewSet,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin):
     queryset = models.Offer.objects.all()
-    serializer_class = serializers.OfferSerializer
 
-    def create(self, request):
-        serializer = self.serializer_class(data=request.data)
+    default_serializer_class = ListOfferSerializer
+    serializer_classes = {
+        'list': ListOfferSerializer,
+        'retrieve': ListOfferSerializer,
+        'create': CreateOfferSerializer,
+    }
+    http_method_names = ('get', 'post', 'patch', 'put', 'delete')
+
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.default_serializer_class)
+
+    def create(self, request, *args, **kwargs):
+        serializer = CreateOfferSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         if serializer.data['order_type'] == 2:
             try:
-                current_user = User.objects.get(id=serializer.data['user'])
                 item_in_inventory = models.Inventory.objects. \
-                    get(user=current_user)
+                    get(user=serializer.data.get('user'))
                 item_in_inventory.quantity += serializer.data['entry_quantity']
                 item_in_inventory.save()
             except ObjectDoesNotExist:
                 item_in_inventory = models. \
                     Inventory(item=models.Item.objects.
                               get(id=serializer.data['item']),
-                              user=current_user,
+                              user=request.current_user,
                               quantity=serializer.data['entry_quantity'])
                 item_in_inventory.save()
 
         return Response(serializer.data)
 
 
-class TestView(APIView):
-
-    def get(self, request):
-        return Response({"msg": "main test ok"})
+# class TestView(APIView):
+#
+#     def get(self, request):
+#         return Response({"msg": "main test ok"})
