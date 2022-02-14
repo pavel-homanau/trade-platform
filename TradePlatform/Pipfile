@@ -20,6 +20,7 @@ flake8 = "*"
 mypy = "*"
 pylint-django = "*"
 kafka-python = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 

@@ -59,6 +59,7 @@ THIRD_PARTY_APPS = [
     # 'debug_toolbar',
     'django_celery_results',
     'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 LOCAL_APPS = [
@@ -71,6 +72,8 @@ INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -191,3 +194,7 @@ CELERY_BEAT_SCHEDULE = {
     #         'schedule': 20.0
     #     },
 }
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3030',
+]
