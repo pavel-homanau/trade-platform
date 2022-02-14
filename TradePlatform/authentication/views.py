@@ -1,41 +1,44 @@
 from rest_framework import status, viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from .models import User
-from .serializers import (RegistrationSerializer,
-                          LoginSerializer,
+from .serializers import (LoginSerializer, RegistrationSerializer,
                           UserSerializer)
 
 
-class RegistrationAPIView(APIView):
-    permission_classes = (AllowAny,)
-    serializer_class = RegistrationSerializer
+class AuthorizationViewSet(viewsets.GenericViewSet):
+    default_serializer_class = LoginSerializer
+    serializer_classes = {
+        'register': RegistrationSerializer,
+        'login': LoginSerializer,
+    }
 
-    def post(self, request):
-        user = request.data.get('user', {})
+    http_method_names = ('post',)
 
-        serializer = self.serializer_class(data=user)
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.default_serializer_class)
+
+    @action(methods=['POST'], detail=False, url_path='registration')
+    def register(self, request):
+
+        serializer = RegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response('You successfully registered.', status=status.HTTP_200_OK)
 
+    @action(methods=['POST'], detail=False, url_path='login')
+    def login(self, request):
 
-class LoginAPIView(APIView):
-    permission_classes = (AllowAny,)
-    serializer_class = LoginSerializer
-
-    def post(self, request):
-        user = request.data.get('user', {})
-
-        serializer = self.serializer_class(data=user)
+        serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        request.session['current_user'] = user
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        request.current_user = User.objects.get(email=serializer.data.get('email'))
+        print(request.current_user)
+        return Response({
+            'token': serializer.data.get('token')
+        }, status=status.HTTP_200_OK)
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):  # pylint: disable=too-many-ancestors

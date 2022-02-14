@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from . import models
+from trading import models
+from trading.models import Offer
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -24,15 +25,33 @@ class WatchListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class OfferSerializer(serializers.ModelSerializer):
-
+class ListOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Offer
         fields = '__all__'
+
+
+class CreateOfferSerializer(serializers.ModelSerializer):
+    current_quantity = serializers.StringRelatedField(source='entry_quantity')
+
+    def create(self, validated_data):
+        validated_data['current_quantity'] = validated_data.get('entry_quantity')
+        return super().create(validated_data)
+
+    class Meta:
+        model = models.Offer
+        fields = ('order_type', 'user', 'item', 'entry_quantity', 'price', 'current_quantity')
 
 
 class InventorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Inventory
+        fields = '__all__'
+
+
+class ListTradeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Trade
         fields = '__all__'

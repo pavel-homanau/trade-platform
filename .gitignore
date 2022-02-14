@@ -1,8 +1,11 @@
 .idea
+
 postgres_data/
-data/
-Pipfile.lock
-TradePlatform/**/__pycache__/
-backend.env
+__pycache__/
+producer/
+*/Pipfile.lock
+
 .mypy_cache
-celery_app
+TradePlatform/backend.env
+email_ms/email_ms.env
+celerybeat-schedule

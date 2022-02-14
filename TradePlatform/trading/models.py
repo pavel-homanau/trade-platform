@@ -1,4 +1,5 @@
 from django.db import models
+
 from authentication.models import User
 
 
@@ -49,21 +50,14 @@ class Offer(models.Model):
         (1, 'buy'),
         (2, 'sell'),
     )
-    user = models.ForeignKey(User, blank=True, null=True,
-                             on_delete=models.SET_NULL)
-    item = models.ForeignKey(Item, blank=True, null=True,
-                             on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     order_type = models.PositiveSmallIntegerField(choices=order_type_choice)
-    entry_quantity = models.IntegerField("Requested quantity",
-                                         blank=True,
-                                         null=True)
+    entry_quantity = models.IntegerField("Requested quantity")
     current_quantity = models.IntegerField("Current quantity",
-                                           blank=True,
-                                           null=True)
+                                           null=True, blank=True)
     price = models.DecimalField(max_digits=7,
-                                decimal_places=2,
-                                blank=True,
-                                null=True)
+                                decimal_places=2)
     is_active = models.BooleanField(default=True)
 
 

@@ -6,4 +6,4 @@ class TradingConfig(AppConfig):
     name = 'trading'
 
     def ready(self):
-        import trading.signals # noqa
+        import trading.signals  # noqa

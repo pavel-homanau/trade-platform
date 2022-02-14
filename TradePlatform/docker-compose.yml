@@ -1,0 +1,111 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:12-alpine
+    container_name: web_db
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./backend.env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    networks:
+      - proxynet
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: web_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    networks:
+      - proxynet
+
+  redis:
+    image: redis:6-alpine
+    container_name: web_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - proxynet
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web_drf
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend.env
+    depends_on:
+      - db
+      - redis
+#      - kafka
+    networks:
+      - proxynet
+
+#  celery:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: web_celery
+#    command: "celery -A TradePlatform worker -l info"
+#    volumes:
+#      - .:/usr/src/app
+#    env_file:
+#      - ./backend.env
+#    depends_on:
+#      - db
+#      - web
+#    networks:
+#      - proxynet
+#
+#  celery-beat:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: web_celery-beat
+#    command: "celery -A TradePlatform beat -l info"
+#    volumes:
+#      - .:/usr/src/app
+#    env_file:
+#      - ./backend.env
+#    depends_on:
+#      - db
+#      - web
+#    networks:
+#      - proxynet
+#
+#  zookeeper:
+#    image: wurstmeister/zookeeper
+#    container_name: zookeeper
+#    ports:
+#      - "2181:2181"
+#    networks:
+#      proxynet:
+#        ipv4_address: 10.1.0.112
+#
+#  kafka:
+#    image: wurstmeister/kafka
+#    container_name: kafka
+#    ports:
+#      - "9092:9092"
+#    env_file:
+#      - ./backend.env
+#    networks:
+#      proxynet:
+#        ipv4_address: 10.1.0.111
+
+networks:
+  proxynet:
+    name: bridge_network_mine
+    ipam:
+      config:
+      - subnet: 10.1.0.0/16
